@@ -1,0 +1,20 @@
+{
+    "xxiqraaa@gmail.com": {
+        "name": "Iqra",
+        "password": "scrypt:32768:8:1$WURq1evmy9KpKb47$4e0033fb8105022901e6f20e2e7442db95d84258634a4a020430a88727b937133509cb6592577704ffdd713ce4c581e85ef949d7564fd5bab54f1259bc0d2f10",
+        "age": "20",
+        "gender": "Female"
+    },
+    "fabiha@gmail.com": {
+        "name": "fabiha",
+        "password": "scrypt:32768:8:1$IZ8sc7AIErDEe3Gk$0a51424587a979d59fb8768ace0c3b7474f22c7e8852bbbb7ee67ed083c62f999bc35954423c6a7d28f1f485ad449d27a812d460dacfbe3cfbbed55225ca2960",
+        "age": "20",
+        "gender": "Female"
+    },
+    "k241024@nu.edu.pk": {
+        "name": "Iqra",
+        "password": "scrypt:32768:8:1$6P4e47RcT03PRuJF$970c87a3de84d982cab807a41735104d5b6d93a3b89aac52869bb4edb921ec6d2a01f6f25c485459bda8489728ef3cfd0d71f673cb2aae71cc23eb0eb998a108",
+        "age": "20",
+        "gender": "Female"
+    }
+}

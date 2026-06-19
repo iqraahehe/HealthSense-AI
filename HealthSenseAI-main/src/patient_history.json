@@ -1,0 +1,302 @@
+{
+    "fabiha@gmail.com": [
+        {
+            "id": "72cdf262-20de-481f-98a2-a619b3fd0446",
+            "date": "2026-04-28 15:32",
+            "age": 28.0,
+            "glucose": 95.0,
+            "bmi": 22.1,
+            "cholesterol": 160.0,
+            "bp_systolic": 115.0,
+            "hemoglobin": 14.5,
+            "prediction": "healthy",
+            "confidence": 1.0,
+            "probabilities": {
+                "anemia": 0.0,
+                "diabetes": 0.0,
+                "healthy": 100.0,
+                "heart": 0.0
+            },
+            "treatment_plan": [
+                {
+                    "exercise": "Cardio (30m)",
+                    "meal": "Keto"
+                },
+                {
+                    "exercise": "HIIT",
+                    "meal": "Vegetarian"
+                },
+                {
+                    "exercise": "Rest",
+                    "meal": "Mediterranean"
+                },
+                {
+                    "exercise": "Yoga",
+                    "meal": "High Protein"
+                },
+                {
+                    "exercise": "Yoga",
+                    "meal": "Low Carb"
+                },
+                {
+                    "exercise": "Brisk Walk (45m)",
+                    "meal": "High Protein"
+                },
+                {
+                    "exercise": "Yoga",
+                    "meal": "DASH Diet"
+                }
+            ],
+            "completed_days": []
+        }
+    ],
+    "xxiqraaa@gmail.com": [
+        {
+            "id": "ea8622b1-7188-4c1e-8bcf-bd31cc43d223",
+            "date": "2026-04-28 23:14",
+            "age": 20.0,
+            "glucose": 185.0,
+            "bmi": 32.0,
+            "cholesterol": 125.0,
+            "bp_systolic": 130.0,
+            "hemoglobin": 14.5,
+            "prediction": "diabetes",
+            "confidence": 1.0,
+            "probabilities": {
+                "anemia": 0.0,
+                "diabetes": 100.0,
+                "healthy": 0.0,
+                "heart": 0.0
+            },
+            "treatment_plan": [
+                {
+                    "exercise": "Brisk Walk (45m)",
+                    "meal": "High Protein"
+                },
+                {
+                    "exercise": "HIIT",
+                    "meal": "High Protein"
+                },
+                {
+                    "exercise": "Cardio (30m)",
+                    "meal": "DASH Diet"
+                },
+                {
+                    "exercise": "Weight Training",
+                    "meal": "Low Carb"
+                },
+                {
+                    "exercise": "Yoga",
+                    "meal": "Keto"
+                },
+                {
+                    "exercise": "Cardio (30m)",
+                    "meal": "High Protein"
+                },
+                {
+                    "exercise": "Weight Training",
+                    "meal": "Vegetarian"
+                }
+            ],
+            "completed_days": []
+        },
+        {
+            "id": "1f5d3f1a-0ecb-4617-80aa-dffd8872cb98",
+            "date": "2026-04-28 23:26",
+            "age": 38.0,
+            "glucose": 122.0,
+            "bmi": 25.5,
+            "cholesterol": 208.0,
+            "bp_systolic": 134.0,
+            "hemoglobin": 11.7,
+            "prediction": "heart",
+            "confidence": 0.431,
+            "probabilities": {
+                "anemia": 0.7,
+                "diabetes": 56.1,
+                "healthy": 0.0,
+                "heart": 43.1
+            },
+            "treatment_plan": [
+                {
+                    "exercise": "Yoga",
+                    "meal": "Vegetarian"
+                },
+                {
+                    "exercise": "Brisk Walk (45m)",
+                    "meal": "Mediterranean"
+                },
+                {
+                    "exercise": "Cardio (30m)",
+                    "meal": "Low Carb"
+                },
+                {
+                    "exercise": "Yoga",
+                    "meal": "Vegetarian"
+                },
+                {
+                    "exercise": "HIIT",
+                    "meal": "Mediterranean"
+                },
+                {
+                    "exercise": "HIIT",
+                    "meal": "Mediterranean"
+                },
+                {
+                    "exercise": "Yoga",
+                    "meal": "DASH Diet"
+                }
+            ],
+            "completed_days": []
+        },
+        {
+            "id": "8dee85e2-b5f3-4bcc-8ccc-55bd51f1de95",
+            "date": "2026-04-28 23:39",
+            "age": 20.0,
+            "glucose": 185.0,
+            "bmi": 32.0,
+            "cholesterol": 125.0,
+            "bp_systolic": 130.0,
+            "hemoglobin": 14.5,
+            "prediction": "diabetes",
+            "confidence": 1.0,
+            "probabilities": {
+                "anemia": 0.0,
+                "diabetes": 100.0,
+                "healthy": 0.0,
+                "heart": 0.0
+            },
+            "treatment_plan": [
+                {
+                    "exercise": "HIIT",
+                    "meal": "Keto"
+                },
+                {
+                    "exercise": "Rest",
+                    "meal": "Keto"
+                },
+                {
+                    "exercise": "Yoga",
+                    "meal": "High Protein"
+                },
+                {
+                    "exercise": "HIIT",
+                    "meal": "DASH Diet"
+                },
+                {
+                    "exercise": "Brisk Walk (45m)",
+                    "meal": "Keto"
+                },
+                {
+                    "exercise": "Cardio (30m)",
+                    "meal": "DASH Diet"
+                },
+                {
+                    "exercise": "HIIT",
+                    "meal": "DASH Diet"
+                }
+            ],
+            "completed_days": []
+        },
+        {
+            "id": "08f491b7-f8ab-4b79-bed4-c8d66731cd80",
+            "date": "2026-05-04 14:02",
+            "age": 20.0,
+            "glucose": 145.0,
+            "bmi": 28.5,
+            "cholesterol": 190.0,
+            "bp_systolic": 125.0,
+            "hemoglobin": 15.0,
+            "prediction": "diabetes",
+            "confidence": 0.9940000000000001,
+            "probabilities": {
+                "anemia": 0.0,
+                "diabetes": 99.4,
+                "healthy": 0.0,
+                "heart": 0.6
+            },
+            "treatment_plan": [
+                {
+                    "exercise": "HIIT",
+                    "meal": "Vegetarian"
+                },
+                {
+                    "exercise": "Yoga",
+                    "meal": "Low Carb"
+                },
+                {
+                    "exercise": "Rest",
+                    "meal": "Keto"
+                },
+                {
+                    "exercise": "Yoga",
+                    "meal": "Mediterranean"
+                },
+                {
+                    "exercise": "Cardio (30m)",
+                    "meal": "Vegetarian"
+                },
+                {
+                    "exercise": "Yoga",
+                    "meal": "Vegetarian"
+                },
+                {
+                    "exercise": "Brisk Walk (45m)",
+                    "meal": "Vegetarian"
+                }
+            ],
+            "completed_days": []
+        }
+    ],
+    "k241024@nu.edu.pk": [
+        {
+            "id": "61cbdf3d-0190-4972-baf5-5c66cb355ecd",
+            "date": "2026-05-14 15:51",
+            "age": 38.0,
+            "glucose": 122.0,
+            "bmi": 25.5,
+            "cholesterol": 208.0,
+            "bp_systolic": 134.0,
+            "hemoglobin": 11.7,
+            "prediction": "heart",
+            "confidence": 0.431,
+            "probabilities": {
+                "anemia": 0.7,
+                "diabetes": 56.1,
+                "healthy": 0.0,
+                "heart": 43.1
+            },
+            "treatment_plan": [
+                {
+                    "exercise": "Yoga",
+                    "meal": "DASH Diet"
+                },
+                {
+                    "exercise": "Weight Training",
+                    "meal": "DASH Diet"
+                },
+                {
+                    "exercise": "Rest",
+                    "meal": "Mediterranean"
+                },
+                {
+                    "exercise": "Brisk Walk (45m)",
+                    "meal": "Low Carb"
+                },
+                {
+                    "exercise": "HIIT",
+                    "meal": "Keto"
+                },
+                {
+                    "exercise": "Brisk Walk (45m)",
+                    "meal": "Keto"
+                },
+                {
+                    "exercise": "Yoga",
+                    "meal": "High Protein"
+                }
+            ],
+            "completed_days": []
+        }
+    ]
+}

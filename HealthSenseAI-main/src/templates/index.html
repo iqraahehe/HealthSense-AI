@@ -1,0 +1,1750 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HealthSense | Patient Portal</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <div class="auth-wrapper" id="authWrapper">
+      <div class="auth-split">
+        <div class="auth-hero">
+          <div class="hero-bg-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+          </div>
+          <div class="hero-content">
+            <div class="hero-logo">
+              <i class="fa-solid fa-plus"></i> HealthSense
+            </div>
+            <h1>Precision Clinical Intelligence.</h1>
+            <p>
+              Empowering patients with predictive AI telemetry, longitudinal
+              biomarker tracking, and mathematically optimized wellness
+              protocols.
+            </p>
+            <div class="hero-badges">
+              <span
+                ><i class="fa-solid fa-shield-halved"></i> Upload Reports</span
+              >
+              <span><i class="fa-solid fa-lock"></i> Integerated ChatBot</span>
+            </div>
+          </div>
+        </div>
+        <div class="auth-panel">
+          <div class="auth-card">
+            <h2 id="authTitle">Patient Login</h2>
+            <p id="authDesc">
+              Secure access to your clinical telemetry records.
+            </p>
+
+            <form id="authForm">
+              <input
+                type="text"
+                id="authName"
+                class="auth-input"
+                placeholder="Full Legal Name"
+                style="display: none" />
+              
+              <div id="authDemographics" style="display: none; gap: 1rem; margin-bottom: 1.2rem;">
+                  <input type="number" id="authAge" class="auth-input" placeholder="Age" style="margin-bottom: 0;" />
+                  <select id="authGender" class="auth-input" style="margin-bottom: 0;">
+                      <option value="" disabled selected>Biological Sex</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                  </select>
+              </div>
+
+              <input
+                type="email"
+                id="authEmail"
+                class="auth-input"
+                placeholder="Email Address"
+                required />
+              <input
+                type="password"
+                id="authPassword"
+                class="auth-input"
+                placeholder="Password"
+                required />
+              <button type="submit" class="auth-btn" id="authBtn">
+                Authenticate
+              </button>
+            </form>
+
+            <div class="auth-toggle" onclick="toggleAuthMode()" id="authToggle">
+              New patient? <span>Register here.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="appLayout"
+      style="display: none; width: 100%; height: 100%; flex-direction: column">
+      <header class="top-navbar">
+        <div class="brand-section">
+          <div class="brand-icon"><i class="fa-solid fa-plus"></i></div>
+          <span class="brand-name">HealthSense</span>
+        </div>
+
+        <div class="nav-tabs" id="viewTabs">
+          <button
+            class="view-tab active"
+            id="tabDashboard"
+            onclick="switchView('dashboard')">
+            Dashboard
+          </button>
+          <button
+            class="view-tab"
+            id="tabNewEval"
+            onclick="switchView('new_eval')">
+            New evaluation
+          </button>
+          <button
+            class="view-tab"
+            id="tabHistory"
+            onclick="switchView('history')">
+            History
+          </button>
+          <button
+            class="view-tab"
+            id="tabReport"
+            onclick="switchView('report')"
+            style="display: none">
+            Latest Report
+          </button>
+          <button
+            class="view-tab"
+            id="tabCarePlan"
+            onclick="switchView('plan')"
+            style="display: none">
+            Treatment Protocol
+          </button>
+        </div>
+
+        <div class="user-actions">
+          <span class="live-clock" id="liveClock">00:00:00</span>
+          <button class="btn-logout" id="logoutBtn">Logout</button>
+        </div>
+      </header>
+
+      <main class="main-content">
+        <div id="dashboard-view" class="view-section">
+          <div class="dash-welcome">
+            <h1 id="welcomeName">Welcome back.</h1>
+            <p>Your longitudinal AI telemetry and clinical insights.</p>
+            <div class="dash-badge">
+              <i class="fa-solid fa-star" style="font-size: 0.7rem"></i> Naive
+              Bayes · Diagnostics
+            </div>
+          </div>
+
+          <div class="prob-grid-new" id="probGrid"></div>
+
+          <div class="middle-layout">
+            <div class="main-chart-card">
+              <div class="chart-header-row">
+                <h3>
+                  <i class="fa-solid fa-chart-line"></i> Biomarker Trajectory
+                </h3>
+                <select
+                  class="metric-selector-light"
+                  id="metricSelector"
+                  onchange="updateChartRender()">
+                  <option value="glucose">Glucose (mg/dL)</option>
+                  <option value="cholesterol">Cholesterol (mg/dL)</option>
+                  <option value="bmi">Body Mass Index</option>
+                  <option value="bp_systolic">Systolic BP (mmHg)</option>
+                </select>
+              </div>
+              <div class="chart-legend">
+                <span class="leg-item"
+                  ><span class="leg-color leg-actual"></span> Actual
+                  <span id="legLabel">glucose</span></span
+                >
+                <span class="leg-item"
+                  ><span class="leg-color leg-trend"></span> AI trend</span
+                >
+              </div>
+
+              <div style="position: relative; height: 240px; width: 100%">
+                <div id="chartEmptyState" class="empty-state-overlay">
+                  <i class="fa-solid fa-chart-area empty-icon"></i>
+                  <span
+                    >No historical data to plot. Generate a new evaluation
+                    first.</span
+                  >
+                </div>
+                <canvas id="trendChart"></canvas>
+              </div>
+            </div>
+
+            <div class="side-panel-stack">
+              <div class="snapshot-card">
+                <h4 class="panel-title">TODAY'S SNAPSHOT</h4>
+                <div class="snap-row">
+                  <div class="snap-info">
+                    <span>Glucose</span>
+                    <strong id="snapGlucoseVal">-- mg/dL</strong>
+                  </div>
+                  <div class="snap-bar-bg">
+                    <div
+                      class="snap-bar-fill fill-teal"
+                      id="snapGlucoseBar"
+                      style="width: 0%"></div>
+                  </div>
+                </div>
+                <div class="snap-row">
+                  <div class="snap-info">
+                    <span>Cholesterol</span>
+                    <strong id="snapCholVal">-- mg/dL</strong>
+                  </div>
+                  <div class="snap-bar-bg">
+                    <div
+                      class="snap-bar-fill fill-blue"
+                      id="snapCholBar"
+                      style="width: 0%"></div>
+                  </div>
+                </div>
+                <div class="snap-row">
+                  <div class="snap-info">
+                    <span>BMI</span> <strong id="snapBMIVal">--</strong>
+                  </div>
+                  <div class="snap-bar-bg">
+                    <div
+                      class="snap-bar-fill fill-green"
+                      id="snapBMIBar"
+                      style="width: 0%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="alert-card">
+                <h4 class="panel-title text-red">
+                  <i class="fa-solid fa-star"></i> MONITORED RISKS
+                </h4>
+                <ul id="risksList" class="alert-list text-red"></ul>
+              </div>
+
+              <div class="insight-card">
+                <h4 class="panel-title text-blue">AI INSIGHT</h4>
+                <ul id="improvementsList" class="insight-list text-blue"></ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="radial-grid-modern">
+            <div class="radial-card-modern">
+              <div
+                class="radial-ring-modern"
+                id="ringGlucose"
+                style="--ring-color: #0ea5e9; --pct: 0%">
+                <i
+                  class="fa-solid fa-cubes-stacked"
+                  style="
+                    font-size: 1.5rem;
+                    color: #0ea5e9;
+                    position: relative;
+                    z-index: 5;
+                  "></i>
+              </div>
+              <div class="radial-value-modern" id="dashGlucose">--</div>
+              <div class="radial-label-modern">GLUCOSE</div>
+            </div>
+            <div class="radial-card-modern">
+              <div
+                class="radial-ring-modern"
+                id="ringChol"
+                style="--ring-color: #3b82f6; --pct: 0%">
+                <i
+                  class="fa-solid fa-droplet"
+                  style="
+                    font-size: 1.5rem;
+                    color: #3b82f6;
+                    position: relative;
+                    z-index: 5;
+                  "></i>
+              </div>
+              <div class="radial-value-modern" id="dashChol">--</div>
+              <div class="radial-label-modern">CHOLESTEROL</div>
+            </div>
+            <div class="radial-card-modern">
+              <div
+                class="radial-ring-modern"
+                id="ringBMI"
+                style="--ring-color: #10b981; --pct: 0%">
+                <i
+                  class="fa-solid fa-weight-scale"
+                  style="
+                    font-size: 1.5rem;
+                    color: #10b981;
+                    position: relative;
+                    z-index: 5;
+                  "></i>
+              </div>
+              <div class="radial-value-modern" id="dashBMI">--</div>
+              <div class="radial-label-modern">BMI</div>
+            </div>
+            <div class="radial-card-modern">
+              <div
+                class="radial-ring-modern"
+                id="ringStatus"
+                style="--ring-color: #ef4444; --pct: 100%">
+                <i
+                  class="fa-solid fa-heart-pulse"
+                  style="
+                    font-size: 1.5rem;
+                    color: #ef4444;
+                    position: relative;
+                    z-index: 5;
+                  "
+                  id="iconStatus"></i>
+              </div>
+              <div
+                class="radial-value-modern"
+                id="dashStatus"
+                style="font-size: 1.2rem; color: #ef4444">
+                N/A
+              </div>
+              <div class="radial-label-modern">AI DIAGNOSIS</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="new-eval-view" class="view-section" style="display: none">
+          <div class="eval-container">
+            <h1 class="page-title">New <em>Evaluation</em></h1>
+            <p class="page-subtitle">
+              Upload a clinical CSV or securely input manual vitals for AI
+              analysis.
+            </p>
+
+            <div class="eval-stepper">
+              <div class="stepper-line"></div>
+              <div class="eval-step active" id="stepIndicator1">
+                <div class="eval-step-circle">
+                  <i
+                    class="fa-solid fa-check"
+                    style="display: none"
+                    id="check1"></i
+                  ><span id="num1">1</span>
+                </div>
+                <span>Demographics</span>
+              </div>
+              <div class="eval-step" id="stepIndicator2">
+                <div class="eval-step-circle">
+                  <i
+                    class="fa-solid fa-check"
+                    style="display: none"
+                    id="check2"></i
+                  ><span id="num2">2</span>
+                </div>
+                <span>Metabolic</span>
+              </div>
+              <div class="eval-step" id="stepIndicator3">
+                <div class="eval-step-circle">3</div>
+                <span style="color: var(--text-muted)">Report</span>
+              </div>
+            </div>
+
+            <label for="csvUpload" class="upload-area" id="uploadLabel">
+              <i
+                class="fa-solid fa-upload"
+                id="uploadIcon"
+                style="color: var(--accent-main)"></i>
+              <span id="uploadText" style="color: var(--accent-main)"
+                >Upload medical CSV</span
+              >
+              <span
+                style="
+                  font-size: 0.8rem;
+                  color: var(--text-muted);
+                  font-weight: 400;
+                  margin-top: 5px;
+                "
+                >Drag & drop or click to browse · .csv files only</span
+              >
+            </label>
+            <input
+              type="file"
+              id="csvUpload"
+              accept=".csv"
+              style="display: none" />
+
+            <form id="healthForm">
+              <div id="evalStep1">
+                
+                <div class="section-label">
+                  <i class="fa-regular fa-user" style="margin-right: 8px"></i>
+                  WHO IS THIS EVALUATION FOR?
+                </div>
+                
+                <div class="patient-mode-toggle">
+                    <button type="button" class="btn-mode active" id="btnModeSelf" onclick="setPatientMode('self')">
+                        <i class="fa-solid fa-user"></i> Myself
+                    </button>
+                    <button type="button" class="btn-mode" id="btnModeOther" onclick="setPatientMode('other')">
+                        <i class="fa-solid fa-user-plus"></i> Someone Else
+                    </button>
+                </div>
+
+                <div class="input-grid" style="grid-template-columns: 1fr 1fr">
+                  
+                  <div class="input-group" id="patientNameGroup" style="display: none; grid-column: 1 / -1;">
+                    <label class="input-label">Patient Full Name</label>
+                    <div class="input-wrapper">
+                      <input type="text" id="evalPatientName" placeholder="e.g. John Doe" />
+                    </div>
+                  </div>
+
+                  <div class="input-group">
+                    <label class="input-label">Age</label>
+                    <div class="input-wrapper" id="ageWrap">
+                      <input type="number" id="age" required readonly /><span
+                        class="input-unit"
+                        >yrs</span
+                      >
+                    </div>
+                  </div>
+                  <div class="input-group">
+                    <label class="input-label">Biological sex</label>
+                    <div class="input-wrapper" id="genderWrap">
+                      <select id="gender" required disabled>
+                        <option value="" disabled selected>Select...</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                      </select>
+                      <i class="fa-solid fa-chevron-down select-icon"></i>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="btn-generate"
+                  onclick="goToStep2()"
+                  style="margin-top: 1rem">
+                  Continue to Vitals <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+
+              <div id="evalStep2" style="display: none">
+                <div class="section-label">
+                  <i class="fa-solid fa-plus" style="margin-right: 8px"></i>
+                  METABOLIC PANEL
+                </div>
+                <div
+                  class="input-grid"
+                  style="grid-template-columns: repeat(3, 1fr)">
+                  <div class="input-group">
+                    <label class="input-label">Glucose</label>
+                    <div class="input-wrapper">
+                      <input
+                        type="number"
+                        step="0.1"
+                        id="glucose"
+                        required /><span class="input-unit">mg/dL</span>
+                    </div>
+                    <span class="input-hint">Ref: 70 - 120</span>
+                  </div>
+                  <div class="input-group">
+                    <label class="input-label">Cholesterol</label>
+                    <div class="input-wrapper">
+                      <input
+                        type="number"
+                        step="0.1"
+                        id="cholesterol"
+                        required /><span class="input-unit">mg/dL</span>
+                    </div>
+                    <span class="input-hint">Ref: 125 - 200</span>
+                  </div>
+                  <div class="input-group">
+                    <label class="input-label">BMI</label>
+                    <div class="input-wrapper">
+                      <input type="number" step="0.1" id="bmi" required /><span
+                        class="input-unit"
+                        >kg/m²</span
+                      >
+                    </div>
+                    <span class="input-hint">Ref: 18.5 - 24.9</span>
+                  </div>
+                </div>
+
+                <div class="section-label">
+                  <i
+                    class="fa-solid fa-heart-pulse"
+                    style="margin-right: 8px"></i>
+                  CARDIOVASCULAR & HEMATOLOGY
+                </div>
+                <div
+                  class="input-grid"
+                  style="grid-template-columns: repeat(3, 1fr)">
+                  <div class="input-group">
+                    <label class="input-label">Blood pressure</label>
+                    <div class="dual-input-wrap">
+                      <input
+                        type="number"
+                        id="bp_systolic"
+                        placeholder="120"
+                        required /><span class="divider">/</span
+                      ><input
+                        type="number"
+                        id="bp_diastolic"
+                        placeholder="80"
+                        required /><span class="unit-text">mmHg</span>
+                    </div>
+                    <span class="input-hint">Ref: 90/60 - 130/80</span>
+                  </div>
+                  <div class="input-group">
+                    <label class="input-label">Heart rate</label>
+                    <div class="input-wrapper">
+                      <input type="number" id="heart_rate" required /><span
+                        class="input-unit"
+                        >BPM</span
+                      >
+                    </div>
+                    <span class="input-hint">Ref: 60 - 100</span>
+                  </div>
+                  <div class="input-group">
+                    <label class="input-label">Hemoglobin</label>
+                    <div class="input-wrapper">
+                      <input
+                        type="number"
+                        step="0.1"
+                        id="hemoglobin"
+                        required /><span class="input-unit">g/dL</span>
+                    </div>
+                    <span class="input-hint">Ref: 12.0 - 17.0</span>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem">
+                  <button
+                    type="button"
+                    class="btn-secondary"
+                    onclick="goToStep1()">
+                    Back
+                  </button>
+                  <button
+                    type="submit"
+                    class="btn-generate"
+                    id="analyzeBtn"
+                    style="margin-top: 0">
+                    Generate Intelligence Report
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div id="history-view" class="view-section" style="display: none">
+          <div class="history-container">
+            <h1 class="page-title">Clinical <em>History</em></h1>
+            <p class="page-subtitle">
+              Your longitudinal record of AI evaluations and telemetry.
+            </p>
+            <div
+              class="history-items-container"
+              id="historyListContainer"></div>
+          </div>
+        </div>
+
+        <div
+          id="active-results"
+          class="document-paper view-section"
+          style="display: none">
+          <div class="doc-header">
+            <div class="doc-clinic-info">
+              <h1>HealthSense Report</h1>
+              <p>Automated Clinical Diagnostics</p>
+            </div>
+            <div class="doc-meta">
+              <button
+                class="btn-download hide-on-print"
+                onclick="window.print()">
+                <i class="fa-solid fa-download"></i> Download Report
+              </button>
+              <div
+                style="
+                  display: flex;
+                  gap: 8px;
+                  margin-top: 12px;
+                  justify-content: flex-end;
+                ">
+                <span class="meta-pill"
+                  >Report date: <strong id="docDate">--</strong></span
+                >
+                <span class="meta-pill"
+                  >Record ID: <strong id="docID">--</strong></span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="risk-assessment-card">
+            <div class="risk-circle-wrapper">
+              <div class="risk-circle" id="riskCircle">
+                <span class="rc-num"><span id="flagCount">0</span>/6</span>
+                <span class="rc-text">FLAGGED</span>
+              </div>
+            </div>
+            <div class="risk-details">
+              <h4>Overall risk assessment</h4>
+              <div class="risk-badges">
+                <span
+                  class="badge-high"
+                  id="badgeHighWrapper"
+                  style="display: none"
+                  ><span id="highCountBadge">0</span> high</span
+                >
+                <span
+                  class="badge-low"
+                  id="badgeLowWrapper"
+                  style="display: none"
+                  ><span id="lowCountBadge">0</span> low</span
+                >
+                <span class="badge-normal"
+                  ><span id="normalCountBadge">6</span> normal</span
+                >
+              </div>
+              <p id="riskSummaryText" class="text-muted">
+                Calculating deviations...
+              </p>
+            </div>
+          </div>
+
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th style="width: 25%">Investigation</th>
+                <th style="width: 25%">Result</th>
+                <th style="width: 20%">Ref. Interval</th>
+                <th style="width: 20%">Visual Index</th>
+                <th style="width: 10%; text-align: center">Flag</th>
+              </tr>
+            </thead>
+            <tbody id="vitalsContainer"></tbody>
+          </table>
+
+          <div class="ai-progress-card" id="aiProgressCard">
+            <div class="ai-prog-header">
+              <div class="ai-icon-box"><i class="fa-regular fa-clock"></i></div>
+              <div>
+                <h4 id="aiProgressTitle">AI analysis in progress</h4>
+                <p>Naive Bayes model running</p>
+              </div>
+            </div>
+            <div class="ai-steps" id="aiStepsList">
+              <div class="ai-step pending" id="stepValid">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> Clinical data
+                validated
+              </div>
+              <div class="ai-step pending" id="stepRef">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> Reference
+                ranges applied
+              </div>
+              <div class="ai-step pending" id="stepCalc">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> Calculating
+                Naive Bayes confidence...
+              </div>
+            </div>
+
+            <div
+              id="finalAiResult"
+              style="
+                display: none;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid var(--main-border);
+              ">
+              <h4
+                style="
+                  font-size: 1.1rem;
+                  color: var(--text-dark);
+                  margin-bottom: 0.3rem;
+                "
+                id="impTitle">
+                --
+              </h4>
+              <p
+                style="font-size: 0.9rem; color: var(--text-muted)"
+                id="impSub">
+                --
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="care-plan-view"
+          class="document-paper view-section"
+          style="display: none">
+          <div class="doc-header">
+            <div class="doc-clinic-info">
+              <h1>HealthSense</h1>
+              <p>AI-Optimized 7-Days Care Plan</p>
+            </div>
+            <div class="doc-meta">
+              <span class="meta-pill"
+                >Patient: <strong id="planName">--</strong></span
+              >
+              <span class="meta-pill" style="margin-top: 8px"
+                >Engine: <strong>Genetic Algorithm</strong></span
+              >
+            </div>
+          </div>
+          <div class="protocol-header">
+            <h2>Lifestyle Intervention Protocol</h2>
+            <p>
+              This 7-day personalized nutritional and activity regimen was
+              mathematically evolved based on the patient's specific biomarker
+              constraints. Click the cards to select/mark days complete.
+            </p>
+          </div>
+          <div class="protocol-grid" id="protocolGrid"></div>
+          <div class="completion-banner" id="completionBanner">
+            <i class="fa-solid fa-trophy" style="font-size: 2.5rem"></i>
+            <div>
+              <h3>Protocol Completed!</h3>
+              <p style="font-size: 0.95rem; opacity: 0.95">
+                You have successfully completed all 7 days of your AI-generated
+                wellness plan. Keep up the excellent work!
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <button class="chat-toggle-btn hide-on-print" onclick="toggleChat()">
+          <i
+            class="fa-solid fa-robot fa-bounce"
+            style="--fa-animation-duration: 3s"></i>
+        </button>
+        <div class="chat-window hide-on-print" id="chatWindow">
+          <div class="chat-header">
+            <div style="display: flex; align-items: center; gap: 0.8rem">
+              <div class="chat-avatar"><i class="fa-solid fa-robot"></i></div>
+              <div>
+                <h4 style="margin: 0; font-size: 1rem; color: var(--text-dark)">
+                  HealthSense Assistant
+                </h4>
+              </div>
+            </div>
+            <button class="chat-close" onclick="toggleChat()">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="chat-body" id="chatBody">
+            <div class="chat-msg ai-msg">
+              <div class="msg-bubble">
+                Hello! How can I assist you with your dashboard insights today?
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-footer">
+            <form id="chatForm" class="chat-input-area">
+              <input
+                type="file"
+                id="chatUpload"
+                style="display: none"
+                accept="image/*,.pdf,.csv,.txt" />
+              <label
+                for="chatUpload"
+                class="chat-upload-btn"
+                title="Upload Document">
+                <i class="fa-solid fa-paperclip"></i>
+              </label>
+              <input
+                type="text"
+                id="chatInput"
+                placeholder="Ask a medical question..."
+                autocomplete="off" />
+              <button type="submit">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </form>
+            <div id="attachmentPreview" class="chat-attachment-preview"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      let sessionUser = JSON.parse(localStorage.getItem("healthsense_user"));
+      let trendChartInstance = null;
+      let isLogin = true;
+      let globalDashboardData = null;
+      let activeCompletedDays = [];
+      let storedPlan = null;
+      let currentEvalMode = 'self';
+
+      if (sessionUser) {
+        initDashboard();
+      }
+
+      function toggleAuthMode() {
+        isLogin = !isLogin;
+        document.getElementById("authTitle").innerText = isLogin
+          ? "Patient Login"
+          : "Patient Registration";
+        document.getElementById("authDesc").innerText = isLogin
+          ? "Secure access to your clinical telemetry records."
+          : "Create your free digital telemetry workspace.";
+        document.getElementById("authBtn").innerText = isLogin
+          ? "Authenticate"
+          : "Create Account";
+        document.getElementById("authToggle").innerHTML = isLogin
+          ? "New patient? <span>Register here.</span>"
+          : "Existing patient? <span>Login here.</span>";
+        
+        document.getElementById("authName").style.display = isLogin ? "none" : "block";
+        document.getElementById("authDemographics").style.display = isLogin ? "none" : "flex";
+
+        if (!isLogin) {
+          document.getElementById("authName").setAttribute("required", "true");
+          document.getElementById("authAge").setAttribute("required", "true");
+          document.getElementById("authGender").setAttribute("required", "true");
+        } else {
+          document.getElementById("authName").removeAttribute("required");
+          document.getElementById("authAge").removeAttribute("required");
+          document.getElementById("authGender").removeAttribute("required");
+        }
+      }
+
+      document
+        .getElementById("authForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const email = document.getElementById("authEmail").value;
+          const password = document.getElementById("authPassword").value;
+          const name = document.getElementById("authName").value;
+          const age = document.getElementById("authAge").value;
+          const gender = document.getElementById("authGender").value;
+
+          const endpoint = isLogin ? "/api/login" : "/api/signup";
+          const payload = isLogin
+            ? { email, password }
+            : { email, password, name, age, gender };
+
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+
+          if (data.success) {
+            if (!isLogin) {
+                data.age = age;
+                data.gender = gender;
+            }
+            sessionUser = data;
+            localStorage.setItem("healthsense_user", JSON.stringify(data));
+            initDashboard();
+          } else {
+            alert(data.error);
+          }
+        });
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("healthsense_user");
+        window.location.reload();
+      });
+
+      function initDashboard() {
+        document.getElementById("authWrapper").classList.add("hidden");
+        document.getElementById("appLayout").style.display = "flex";
+
+        const firstName = sessionUser.name.split(" ")[0];
+        document.getElementById("welcomeName").innerHTML =
+          `Welcome back, <span class="text-teal">${firstName}</span>.`;
+
+        const email = sessionUser.email;
+        activeCompletedDays = JSON.parse(localStorage.getItem(`healthsense_completed_days_${email}`)) || [];
+        storedPlan = JSON.parse(localStorage.getItem(`healthsense_current_plan_${email}`));
+
+        if (storedPlan) {
+          renderStoredPlan(storedPlan);
+        } else {
+          document.getElementById("tabCarePlan").style.display = "none";
+          document.getElementById("protocolGrid").innerHTML = "";
+        }
+
+        switchView("dashboard");
+      }
+
+      function setPatientMode(mode) {
+          currentEvalMode = mode;
+          const btnSelf = document.getElementById('btnModeSelf');
+          const btnOther = document.getElementById('btnModeOther');
+          const ageInput = document.getElementById('age');
+          const genderInput = document.getElementById('gender');
+          
+          const nameGroup = document.getElementById('patientNameGroup');
+          const nameInput = document.getElementById('evalPatientName');
+
+          if(mode === 'self') {
+              btnSelf.classList.add('active');
+              btnOther.classList.remove('active');
+              
+              ageInput.value = sessionUser.age || '';
+              genderInput.value = sessionUser.gender || '';
+              ageInput.readOnly = true;
+              genderInput.disabled = true;
+
+              nameGroup.style.display = 'none';
+              nameInput.removeAttribute('required');
+              nameInput.value = sessionUser.name;
+          } else {
+              btnOther.classList.add('active');
+              btnSelf.classList.remove('active');
+              
+              ageInput.value = '';
+              genderInput.value = '';
+              ageInput.readOnly = false;
+              genderInput.disabled = false;
+
+              nameGroup.style.display = 'flex';
+              nameInput.setAttribute('required', 'true');
+              nameInput.value = '';
+          }
+      }
+
+      function goToStep2() {
+        const nameInput = document.getElementById("evalPatientName");
+        const age = document.getElementById("age").value;
+        const gender = document.getElementById("gender").value;
+        
+        if (currentEvalMode === 'other' && !nameInput.value.trim()) {
+           alert("Please provide the Patient's Full Name.");
+           return;
+        }
+
+        if (!age || !gender) {
+          alert("Please provide Age and Gender before proceeding.");
+          return;
+        }
+        document.getElementById("evalStep1").style.display = "none";
+        document.getElementById("evalStep2").style.display = "block";
+
+        document.getElementById("num1").style.display = "none";
+        document.getElementById("check1").style.display = "inline-block";
+        document.getElementById("stepIndicator1").classList.add("completed");
+        document.getElementById("stepIndicator2").classList.add("active");
+      }
+
+      function goToStep1() {
+        document.getElementById("evalStep2").style.display = "none";
+        document.getElementById("evalStep1").style.display = "block";
+
+        document.getElementById("num1").style.display = "inline-block";
+        document.getElementById("check1").style.display = "none";
+        document.getElementById("stepIndicator1").classList.remove("completed");
+        document.getElementById("stepIndicator2").classList.remove("active");
+      }
+
+      async function fetchDashboardData() {
+        const res = await fetch("/api/dashboard_data", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ patient_email: sessionUser.email }),
+        });
+        const data = await res.json();
+        globalDashboardData = data;
+
+        const historyList = document.getElementById("historyListContainer");
+        const impList = document.getElementById("improvementsList");
+        const riskList = document.getElementById("risksList");
+        const pGrid = document.getElementById("probGrid");
+        const emptyChart = document.getElementById("chartEmptyState");
+        const trendChart = document.getElementById("trendChart");
+
+        if (data.empty || !data.latest) {
+          emptyChart.style.display = "flex";
+          trendChart.style.display = "none";
+
+          ["Glucose", "Chol", "BMI"].forEach((metric) => {
+            document.getElementById(`dash${metric}`).innerText = "--";
+            document
+              .getElementById(`ring${metric}`)
+              .style.setProperty("--pct", "0%");
+            document.getElementById(`snap${metric}Val`).innerText = "--";
+            document.getElementById(`snap${metric}Bar`).style.width = "0%";
+          });
+          document.getElementById("dashStatus").innerText = "N/A";
+          document.getElementById("dashStatus").style.color =
+            "var(--text-muted)";
+          document
+            .getElementById("ringStatus")
+            .style.setProperty("--ring-color", "#e2e8f0");
+          document.getElementById("iconStatus").style.color =
+            "var(--text-muted)";
+
+          pGrid.innerHTML =
+            '<div class="tracker-empty-state" style="grid-column: 1/-1;">Run your first diagnostics to unlock AI probability models.</div>';
+          impList.innerHTML =
+            "<li>Awaiting initial evaluation to track improvements.</li>";
+          riskList.innerHTML =
+            "<li>Awaiting initial evaluation to monitor risks.</li>";
+
+          historyList.innerHTML =
+            '<div class="tracker-empty-state">Your telemetry timeline is empty.</div>';
+          return;
+        }
+
+        emptyChart.style.display = "none";
+        trendChart.style.display = "block";
+
+        const gVal = data.latest.glucose;
+        const cVal = data.latest.cholesterol;
+        const bVal = data.latest.bmi;
+
+        document.getElementById("dashGlucose").innerText = gVal;
+        document
+          .getElementById("ringGlucose")
+          .style.setProperty("--pct", Math.min((gVal / 200) * 100, 100) + "%");
+        document.getElementById("dashChol").innerText = cVal;
+        document
+          .getElementById("ringChol")
+          .style.setProperty("--pct", Math.min((cVal / 300) * 100, 100) + "%");
+        document.getElementById("dashBMI").innerText = bVal;
+        document
+          .getElementById("ringBMI")
+          .style.setProperty("--pct", Math.min((bVal / 40) * 100, 100) + "%");
+
+        document.getElementById("snapGlucoseVal").innerText = `${gVal} mg/dL`;
+        document.getElementById("snapGlucoseBar").style.width =
+          Math.min((gVal / 200) * 100, 100) + "%";
+        document.getElementById("snapCholVal").innerText = `${cVal} mg/dL`;
+        document.getElementById("snapCholBar").style.width =
+          Math.min((cVal / 300) * 100, 100) + "%";
+        document.getElementById("snapBMIVal").innerText = bVal;
+        document.getElementById("snapBMIBar").style.width =
+          Math.min((bVal / 40) * 100, 100) + "%";
+
+        const statusEl = document.getElementById("dashStatus");
+        const pred = data.latest.prediction.toUpperCase();
+        statusEl.innerText = pred;
+        const isHealthy = data.latest.prediction === "HEALTHY";
+        const statusColor = isHealthy ? "#10b981" : "#ef4444";
+        statusEl.style.color = statusColor;
+        document
+          .getElementById("ringStatus")
+          .style.setProperty("--ring-color", statusColor);
+        document.getElementById("iconStatus").style.color = statusColor;
+        document.getElementById("iconStatus").className = isHealthy
+          ? "fa-solid fa-shield-heart"
+          : "fa-solid fa-heart-pulse";
+
+        impList.innerHTML =
+          data.improvements.length > 0
+            ? data.improvements.map((i) => `<li>${i}</li>`).join("")
+            : "<li>Maintain consistent tracking to uncover improvements.</li>";
+        riskList.innerHTML =
+          data.risks.length > 0
+            ? data.risks.map((r) => `<li>${r}</li>`).join("")
+            : "<li>No critical deviations detected.</li>";
+
+        if (
+          data.latest.probabilities &&
+          Object.keys(data.latest.probabilities).length > 0
+        ) {
+          pGrid.innerHTML = "";
+          const cMap = {
+            anemia: {
+              icon: "fa-plus",
+              cls: "theme-anemia",
+              label: "ANEMIA RISK",
+              msg: "No indicators found",
+            },
+            diabetes: {
+              icon: "fa-circle-exclamation",
+              cls: "theme-diabetes",
+              label: "DIABETES RISK",
+              msg: "Glucose in range",
+            },
+            healthy: {
+              icon: "fa-check",
+              cls: "theme-healthy",
+              label: "HEALTHY PROFILE",
+              msg: "All markers normal",
+            },
+            heart: {
+              icon: "fa-circle-exclamation",
+              cls: "theme-cardio",
+              label: "CARDIOVASCULAR",
+              msg: "Needs attention",
+            },
+          };
+
+          const order = ["anemia", "diabetes", "healthy", "heart"];
+          order.forEach((key) => {
+            if (data.latest.probabilities[key] !== undefined) {
+              const val = data.latest.probabilities[key];
+              const c = cMap[key];
+              pGrid.innerHTML += `
+                  <div class="prob-card-modern ${c.cls}">
+                    <div class="pc-icon"><i class="fa-solid ${c.icon}"></i></div>
+                    <div class="pc-label">${c.label}</div>
+                    <div class="pc-val">${val}%</div>
+                    <div class="pc-msg">${val > 50 && key !== "healthy" ? "Elevated risk detected" : c.msg}</div>
+                  </div>
+               `;
+            }
+          });
+        }
+
+        updateChartRender();
+
+        historyList.innerHTML = "";
+        data.history.forEach((item) => {
+          const predLower = item.prediction.toLowerCase();
+          let stColor = "#10b981";
+          let stIcon = "fa-shield-heart";
+
+          if (predLower === "anemia") {
+            stColor = "#ef4444";
+            stIcon = "fa-droplet";
+          } else if (predLower === "diabetes") {
+            stColor = "#f59e0b";
+            stIcon = "fa-cubes-stacked";
+          } else if (predLower === "heart") {
+            stColor = "#dc2626";
+            stIcon = "fa-heart-pulse";
+          }
+
+          const recId = item.id || item.date;
+
+          historyList.innerHTML += `
+            <div class="hist-card">
+              <div class="hist-date-col">
+                <div class="hist-icon"><i class="fa-regular fa-calendar"></i></div>
+                <div class="hist-date-val">${item.date}</div>
+              </div>
+              <div class="hist-vitals-col">
+                <div class="hist-vital"><span class="hv-label">Glucose</span><span class="hv-val">${item.glucose}</span></div>
+                <div class="hist-vital"><span class="hv-label">Cholesterol</span><span class="hv-val">${item.cholesterol}</span></div>
+                <div class="hist-vital"><span class="hv-label">BMI</span><span class="hv-val">${item.bmi}</span></div>
+              </div>
+              <div class="hist-status-col" style="display: flex; gap: 15px;">
+                <div class="hist-badge" style="color: ${stColor}; background: ${stColor}15; border: 1px solid ${stColor}30;">
+                  <i class="fa-solid ${stIcon}"></i> ${item.prediction.toUpperCase()}
+                </div>
+                <button class="btn-delete-hist" onclick="deleteHistoryItem('${recId}')" title="Delete record"><i class="fa-solid fa-trash-can"></i></button>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      async function deleteHistoryItem(recordId) {
+        if (
+          !confirm(
+            "Are you sure you want to permanently delete this clinical record?",
+          )
+        )
+          return;
+
+        try {
+          const res = await fetch("/api/delete_history", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              patient_email: sessionUser.email,
+              record_id: recordId,
+            }),
+          });
+          const data = await res.json();
+          if (data.success) {
+            fetchDashboardData();
+          } else {
+            alert(
+              "Could not delete record: " + (data.error || "Unknown error"),
+            );
+          }
+        } catch (e) {
+          alert("Network error trying to delete record.");
+        }
+      }
+
+      function updateChartRender() {
+        if (!globalDashboardData || globalDashboardData.empty) return;
+        const metricKey = document.getElementById("metricSelector").value;
+        const actualData = globalDashboardData.metrics[metricKey];
+        const trendData = globalDashboardData.trendlines[metricKey];
+
+        document.getElementById("legLabel").innerText = metricKey.replace(
+          "_",
+          " ",
+        );
+
+        const ctx = document.getElementById("trendChart").getContext("2d");
+        if (trendChartInstance) trendChartInstance.destroy();
+
+        trendChartInstance = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: globalDashboardData.dates,
+            datasets: [
+              {
+                label: "Actual",
+                data: actualData,
+                borderColor: "#0d9488",
+                borderWidth: 3,
+                backgroundColor: "transparent",
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: "#fff",
+                pointBorderColor: "#0d9488",
+              },
+              {
+                label: "AI Trend",
+                data: trendData,
+                borderColor: "#93c5fd",
+                borderDash: [5, 5],
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false,
+                tension: 0.4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                grid: { display: false },
+                ticks: { color: "#94a3b8", font: { size: 10 } },
+              },
+              y: {
+                grid: { color: "#f1f5f9" },
+                border: { display: false },
+                ticks: { color: "#94a3b8", font: { size: 10 } },
+              },
+            },
+          },
+        });
+      }
+
+      function renderStoredPlan(plan) {
+        const grid = document.getElementById("protocolGrid");
+        const planTab = document.getElementById("tabCarePlan");
+        
+        if (!plan || plan.length === 0) return;
+        
+        planTab.style.display = "flex";
+        grid.innerHTML = "";
+
+        const evalNameInput = document.getElementById("evalPatientName");
+        const nameToUse = evalNameInput && evalNameInput.value ? evalNameInput.value : sessionUser.name;
+        document.getElementById("planName").innerText = nameToUse;
+
+        plan.forEach((day, i) => {
+          let themeClass = "theme-balanced";
+          if (day.meal) {
+            const mealStr = day.meal.toLowerCase();
+            if (mealStr.includes("mediterranean")) themeClass = "theme-med";
+            else if (mealStr.includes("keto") || mealStr.includes("low carb")) themeClass = "theme-keto";
+            else if (mealStr.includes("dash")) themeClass = "theme-dash";
+            else if (mealStr.includes("protein")) themeClass = "theme-protein";
+          }
+
+          const isSelected = activeCompletedDays.includes(i) ? "selected" : "";
+
+          grid.innerHTML += `
+            <div class="protocol-card ${themeClass} ${isSelected}" onclick="toggleCard(this, ${i})">
+                <div class="p-day-badge">Day ${i + 1}</div>
+                <div class="p-detail-row">
+                    <div class="p-icon-box"><i class="fa-solid fa-utensils"></i></div>
+                    <div class="p-content">
+                        <div class="p-label">Nutrition Goal</div>
+                        <div class="p-value">${day.meal}</div>
+                    </div>
+                </div>
+                <div class="p-detail-row">
+                    <div class="p-icon-box"><i class="fa-solid fa-person-running"></i></div>
+                    <div class="p-content">
+                        <div class="p-label">Activity Goal</div>
+                        <div class="p-value">${day.exercise}</div>
+                    </div>
+                </div>
+            </div>`;
+        });
+        checkCompletion();
+      }
+
+      function toggleCard(element, dayIndex) {
+        element.classList.toggle("selected");
+        if (element.classList.contains("selected")) {
+          if (!activeCompletedDays.includes(dayIndex))
+            activeCompletedDays.push(dayIndex);
+        } else {
+          activeCompletedDays = activeCompletedDays.filter(
+            (d) => d !== dayIndex,
+          );
+        }
+
+        if (currentEvalMode === 'self') {
+            localStorage.setItem(`healthsense_completed_days_${sessionUser.email}`, JSON.stringify(activeCompletedDays));
+        }
+        checkCompletion();
+      }
+
+      function checkCompletion() {
+        const totalCards = document.querySelectorAll(".protocol-card").length;
+        const banner = document.getElementById("completionBanner");
+        if (totalCards > 0 && activeCompletedDays.length === totalCards) {
+          banner.classList.add("active");
+        } else {
+          banner.classList.remove("active");
+        }
+      }
+
+      function switchView(view) {
+        document
+          .querySelectorAll(".view-tab")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelectorAll(".view-section")
+          .forEach((v) => (v.style.display = "none"));
+
+        if (view === "dashboard") {
+          document.getElementById("tabDashboard").classList.add("active");
+          document.getElementById("dashboard-view").style.display = "block";
+          fetchDashboardData();
+        } else if (view === "new_eval") {
+          document.getElementById("tabNewEval").classList.add("active");
+          document.getElementById("new-eval-view").style.display = "block";
+          setPatientMode('self');
+          goToStep1();
+        } else if (view === "history") {
+          document.getElementById("tabHistory").classList.add("active");
+          document.getElementById("history-view").style.display = "block";
+        } else if (view === "report") {
+          document.getElementById("tabReport").style.display = "flex";
+          document.getElementById("tabReport").classList.add("active");
+          document.getElementById("active-results").style.display = "block";
+        } else if (view === "plan") {
+          document.getElementById("tabCarePlan").style.display = "flex";
+          document.getElementById("tabCarePlan").classList.add("active");
+          document.getElementById("care-plan-view").style.display = "block";
+        }
+      }
+
+      setInterval(() => {
+        document.getElementById("liveClock").innerText =
+          new Date().toLocaleTimeString("en-US", { hour12: false });
+      }, 1000);
+
+      const ranges = {
+        glucose: {
+          min: 70,
+          max: 120,
+          absMin: 40,
+          absMax: 200,
+          unit: "mg/dL",
+          string: "70-120",
+        },
+        blood_pressure: {
+          min: 90,
+          max: 130,
+          absMin: 60,
+          absMax: 200,
+          unit: "mmHg",
+          string: "90-130",
+        },
+        heart_rate: {
+          min: 60,
+          max: 100,
+          absMin: 40,
+          absMax: 180,
+          unit: "BPM",
+          string: "60-100",
+        },
+        hemoglobin: {
+          min: 12.0,
+          max: 17.0,
+          absMin: 8.0,
+          absMax: 22.0,
+          unit: "g/dL",
+          string: "12.0-17.0",
+        },
+        cholesterol: {
+          min: 125,
+          max: 200,
+          absMin: 80,
+          absMax: 300,
+          unit: "mg/dL",
+          string: "125-200",
+        },
+        bmi: {
+          min: 18.5,
+          max: 24.9,
+          absMin: 10,
+          absMax: 40,
+          unit: "kg/m²",
+          string: "18.5-24.9",
+        },
+      };
+
+      document
+        .getElementById("healthForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const btn = document.getElementById("analyzeBtn");
+          btn.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin"></i> Generating...';
+          btn.disabled = true;
+
+          const evalEmail = currentEvalMode === 'self' ? sessionUser.email : 'guest_' + Date.now() + '@anon.com';
+
+          const formData = new FormData();
+          formData.append("patient_email", evalEmail);
+          formData.append(
+            "report_text",
+            `
+            gender: ${document.getElementById("gender").value}
+            glucose: ${document.getElementById("glucose").value}
+            blood_pressure: ${document.getElementById("bp_systolic").value}
+            heart_rate: ${document.getElementById("heart_rate").value}
+            hemoglobin: ${document.getElementById("hemoglobin").value}
+            cholesterol: ${document.getElementById("cholesterol").value}
+            bmi: ${document.getElementById("bmi").value}
+            age: ${document.getElementById("age").value}
+        `,
+          );
+
+          try {
+            const response = await fetch("/analyze", {
+              method: "POST",
+              body: formData,
+            });
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+            renderResults(data);
+          } catch (error) {
+            alert("Model Inference Failed: " + error.message);
+          } finally {
+            btn.innerHTML = "Generate Intelligence Report";
+            btn.disabled = false;
+          }
+        });
+
+      document
+        .getElementById("csvUpload")
+        .addEventListener("change", async function (e) {
+          const file = e.target.files[0];
+          if (!file) return;
+          const uploadIcon = document.getElementById("uploadIcon");
+          const uploadText = document.getElementById("uploadText");
+          uploadIcon.className = "fa-solid fa-spinner fa-spin";
+          uploadText.innerText = "Extracting...";
+
+          const formData = new FormData();
+          formData.append("file", file);
+
+          try {
+            const response = await fetch("/parse_csv", {
+              method: "POST",
+              body: formData,
+            });
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+            for (const [key, value] of Object.entries(data.data)) {
+              if (key === "blood_pressure") {
+                document.getElementById("bp_systolic").value = value;
+                document.getElementById("bp_diastolic").value = "80";
+              } else {
+                const inputField = document.getElementById(key);
+                if (inputField) inputField.value = value;
+              }
+            }
+            uploadText.innerText = "Extraction Complete";
+            setTimeout(() => {
+              uploadText.innerText = "Upload medical CSV";
+            }, 3000);
+          } catch (error) {
+            alert("CSV Error: " + error.message);
+          } finally {
+            uploadIcon.className = "fa-solid fa-upload";
+            e.target.value = "";
+          }
+        });
+
+      function renderResults(data) {
+        document.getElementById("docDate").innerText =
+          new Date().toLocaleDateString("en-US");
+        document.getElementById("docID").innerText =
+          "HS-" + Math.floor(100000 + Math.random() * 900000);
+        
+        let printName = currentEvalMode === 'self' ? sessionUser.name : document.getElementById("evalPatientName").value;
+        document.getElementById("planName").innerText = printName || 'Guest Patient';
+        document.getElementById("tabReport").style.display = "flex";
+
+        const container = document.getElementById("vitalsContainer");
+        container.innerHTML = "";
+
+        let highCount = 0;
+        let lowCount = 0;
+        let normalCount = 0;
+        let flaggedNames = [];
+
+        for (const [key, value] of Object.entries(data.data)) {
+          if (key === "age") continue;
+          const rule = ranges[key.toLowerCase()];
+
+          let statusClass = "table-pill-normal",
+            statusText = "Normal",
+            dotColor = "var(--status-healthy)";
+          let normLeft = 25,
+            normWidth = 50,
+            leftPct = 50;
+
+          if (rule) {
+            if (value > rule.max) {
+              statusClass = "table-pill-high";
+              statusText = "High";
+              dotColor = "var(--status-alert)";
+              highCount++;
+              flaggedNames.push(key.replace("_", " "));
+            } else if (value < rule.min) {
+              statusClass = "table-pill-low";
+              statusText = "Low";
+              dotColor = "var(--status-warning)";
+              lowCount++;
+              flaggedNames.push(key.replace("_", " "));
+            } else {
+              normalCount++;
+            }
+
+            const totalRange = rule.absMax - rule.absMin;
+            normLeft = ((rule.min - rule.absMin) / totalRange) * 100;
+            normWidth = ((rule.max - rule.min) / totalRange) * 100;
+            leftPct = Math.max(
+              0,
+              Math.min(100, ((value - rule.absMin) / totalRange) * 100),
+            );
+          }
+
+          let displayValue = key === "blood_pressure" ? `${value}/80` : value;
+
+          let deltaHtml = "";
+          if (data.deltas && data.deltas[key]) {
+            const d = data.deltas[key];
+            if (d > 0)
+              deltaHtml = `<span class="delta-high"><i class="fa-solid fa-arrow-up"></i> ${d}</span>`;
+            else if (d < 0)
+              deltaHtml = `<span class="delta-low"><i class="fa-solid fa-arrow-down"></i> ${Math.abs(d)}</span>`;
+          }
+
+          container.innerHTML += `
+            <tr>
+                <td class="test-name">${key.replace("_", " ")}</td>
+                <td><span class="test-result">${displayValue}</span><span class="test-unit">${rule ? rule.unit : ""}</span>${deltaHtml}</td>
+                <td class="test-ref">${rule ? rule.string : "--"}</td>
+                <td><div class="visual-bar-container"><div class="visual-bar-bg-normal" style="left: ${normLeft}%; width: ${normWidth}%;"></div><div class="visual-bar-fill" data-left="${leftPct}%" style="left: 0%; background: ${dotColor};"></div></div></td>
+                <td style="text-align: right;"><span class="${statusClass}">${statusText}</span></td>
+            </tr>`;
+        }
+
+        document.getElementById("flagCount").innerText = highCount + lowCount;
+
+        const highWrapper = document.getElementById("badgeHighWrapper");
+        if (highCount > 0) {
+          document.getElementById("highCountBadge").innerText = highCount;
+          highWrapper.style.display = "inline-block";
+        } else {
+          highWrapper.style.display = "none";
+        }
+
+        const lowWrapper = document.getElementById("badgeLowWrapper");
+        if (lowCount > 0) {
+          document.getElementById("lowCountBadge").innerText = lowCount;
+          lowWrapper.style.display = "inline-block";
+        } else {
+          lowWrapper.style.display = "none";
+        }
+
+        document.getElementById("normalCountBadge").innerText = normalCount;
+
+        const riskPct =
+          ((highCount + lowCount) / (highCount + lowCount + normalCount)) * 100;
+        document
+          .getElementById("riskCircle")
+          .style.setProperty("--risk-pct", `${riskPct}%`);
+
+        if (highCount > 0 || lowCount > 0) {
+          let names = flaggedNames
+            .map((n) => n.charAt(0).toUpperCase() + n.slice(1))
+            .join(", ");
+          document.getElementById("riskSummaryText").innerText =
+            `${names} fall outside reference ranges.`;
+        } else {
+          document.getElementById("riskSummaryText").innerText =
+            `All markers are within normal reference ranges.`;
+        }
+
+        setTimeout(
+          () =>
+            document
+              .querySelectorAll(".visual-bar-fill")
+              .forEach((b) => (b.style.left = b.getAttribute("data-left"))),
+          50,
+        );
+
+        if (data.treatment_plan && data.treatment_plan.length > 0) {
+          if (currentEvalMode === 'self') {
+            localStorage.setItem(`healthsense_current_plan_${sessionUser.email}`, JSON.stringify(data.treatment_plan));
+            activeCompletedDays = data.completed_days || [];
+            localStorage.setItem(`healthsense_completed_days_${sessionUser.email}`, JSON.stringify(activeCompletedDays));
+          } else {
+            activeCompletedDays = [];
+          }
+          renderStoredPlan(data.treatment_plan);
+        } else {
+          document.getElementById("tabCarePlan").style.display = "none";
+        }
+
+        switchView("report");
+        animateAIProgress(data);
+      }
+
+      function animateAIProgress(data) {
+        document.getElementById("aiProgressTitle").innerText =
+          "AI analysis in progress";
+        document.getElementById("finalAiResult").style.display = "none";
+
+        const steps = ["stepValid", "stepRef", "stepCalc"];
+        steps.forEach((id) => {
+          const el = document.getElementById(id);
+          el.className = "ai-step pending";
+          el.innerHTML = el.innerHTML
+            .replace("fa-circle-check", "fa-circle-notch fa-spin")
+            .replace("fa-circle-dot", "fa-circle-notch fa-spin");
+        });
+
+        setTimeout(() => {
+          document.getElementById("stepValid").className = "ai-step complete";
+          document.getElementById("stepValid").innerHTML =
+            '<i class="fa-solid fa-circle-check"></i> Clinical data validated';
+        }, 600);
+
+        setTimeout(() => {
+          document.getElementById("stepRef").className = "ai-step complete";
+          document.getElementById("stepRef").innerHTML =
+            '<i class="fa-solid fa-circle-check"></i> Reference ranges applied';
+        }, 1200);
+
+        setTimeout(() => {
+          document.getElementById("stepCalc").className = "ai-step active-step";
+          document.getElementById("stepCalc").innerHTML =
+            '<i class="fa-regular fa-circle-dot"></i> Calculating Naive Bayes confidence...';
+        }, 1800);
+
+        setTimeout(() => {
+          document.getElementById("aiProgressTitle").innerText =
+            "AI analysis complete";
+          document.getElementById("stepCalc").className = "ai-step complete";
+          document.getElementById("stepCalc").innerHTML =
+            '<i class="fa-solid fa-circle-check"></i> Calculating Naive Bayes confidence...';
+
+          const resBox = document.getElementById("finalAiResult");
+          resBox.style.display = "block";
+
+          if (data.prediction.toLowerCase() === "healthy") {
+            document.getElementById("impTitle").innerHTML =
+              `<i class="fa-solid fa-check-circle" style="color:#10b981;"></i> Healthy profile.`;
+          } else {
+            document.getElementById("impTitle").innerHTML =
+              `<i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i> Indication of ${data.prediction.toUpperCase()}`;
+          }
+          document.getElementById("impSub").innerText =
+            `AI Confidence: ${data.confidence}`;
+        }, 2800);
+      }
+
+      function toggleChat() {
+        document.getElementById("chatWindow").classList.toggle("active");
+      }
+
+      function clearAttachment() {
+        document.getElementById("chatUpload").value = "";
+        const preview = document.getElementById("attachmentPreview");
+        preview.style.display = "none";
+        preview.innerHTML = "";
+      }
+
+      document
+        .getElementById("chatUpload")
+        .addEventListener("change", function (e) {
+          const preview = document.getElementById("attachmentPreview");
+          if (e.target.files.length > 0) {
+            const fileName = e.target.files[0].name;
+            preview.innerHTML = `<span><i class="fa-solid fa-file-medical"></i> ${fileName}</span><i class="fa-solid fa-xmark remove-attach" onclick="clearAttachment()"></i>`;
+            preview.style.display = "flex";
+          }
+        });
+
+      document
+        .getElementById("chatForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const input = document.getElementById("chatInput");
+          const fileInput = document.getElementById("chatUpload");
+          const msg = input.value.trim();
+          const file = fileInput.files[0];
+
+          if (!msg && !file) return;
+
+          const body = document.getElementById("chatBody");
+          let displayMsg = msg || "Uploaded a document for review.";
+          if (file) {
+            displayMsg += `<div style="margin-top: 8px; padding: 6px 10px; background: rgba(255,255,255,0.2); border-radius: 6px; font-size: 0.8rem; display: flex; align-items: center; gap: 6px;"><i class="fa-solid fa-paperclip"></i> ${file.name}</div>`;
+          }
+
+          body.innerHTML += `<div class="chat-msg user-msg"><div class="msg-bubble">${displayMsg}</div></div>`;
+          input.value = "";
+
+          const typingId = "typing-" + Date.now();
+          body.innerHTML += `<div class="chat-msg ai-msg" id="${typingId}"><div class="msg-bubble">...</div></div>`;
+          body.scrollTop = body.scrollHeight;
+
+          const formData = new FormData();
+          formData.append("message", msg);
+          if (file) formData.append("file", file);
+
+          clearAttachment();
+
+          try {
+            const res = await fetch("/chat", {
+              method: "POST",
+              body: formData,
+            });
+            const data = await res.json();
+            document.getElementById(typingId).remove();
+            body.innerHTML += `<div class="chat-msg ai-msg"><div class="msg-bubble">${data.reply}</div></div>`;
+          } catch (error) {
+            document.getElementById(typingId).remove();
+            body.innerHTML += `<div class="chat-msg ai-msg"><div class="msg-bubble" style="color: #ef4444;">Connection error. Please try again.</div></div>`;
+          }
+          body.scrollTop = body.scrollHeight;
+        });
+    </script>
+  </body>
+</html>

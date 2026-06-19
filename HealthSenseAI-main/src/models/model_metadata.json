@@ -1,0 +1,18 @@
+{
+  "feature_columns": [
+    "glucose",
+    "blood_pressure",
+    "heart_rate",
+    "hemoglobin",
+    "cholesterol",
+    "bmi",
+    "age"
+  ],
+  "target_column": "disease",
+  "label_mapping": {
+    "anemia": 0,
+    "diabetes": 1,
+    "healthy": 2,
+    "heart": 3
+  }
+}
